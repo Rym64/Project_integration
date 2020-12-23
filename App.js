@@ -1,21 +1,41 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import './App.css';
+import List from './component/List';
+import withListLoading from './component/withListLoading';
+function App() {
+  const ListLoading = withListLoading(List);
+  const [appState, setAppState] = useState({
+    loading: false,
+    repos: null,
+  });
 
-export default function App() {
+  useEffect(() => {
+    setAppState({ loading: true });
+    const apiUrl = 'http://165.50.236.179/in/api.php';
+    fetch(apiUrl)
+      .then((res) => res.json())
+      .then((repos) => {
+        setAppState({ loading: false, repos: repos });
+      });
+  }, [setAppState]);
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <div className='App'>
+      <div className='container'>
+        <h1>List Of Product</h1>
+      </div>
+      <div className='repo-container'>
+        <ListLoading isLoading={appState.loading} repos={appState.repos} />
+      </div>
+      <footer>
+        <div className='footer'>
+          2021 {' '}
+          <span role='img' aria-label='love'>
+            💚
+          </span>{' '}
+          Project Integration
+        </div>
+      </footer>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
